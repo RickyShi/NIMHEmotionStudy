@@ -7,8 +7,8 @@
 			<answer id = "3">3 - Somewhat</answer>
 			<answer id = "4">4 - Quite a bit</answer>
 			<answer id = "5">5 - Extremely</answer>
-			<text id="01">How much are you focusing on your feelings right now?</text>
-			<text id="02">How much are you focusing on your problems right now?</text>
+			<text id="01">In the last 15 minutes, how much were you focusing on your feelings?</text>
+			<text id="02">In the last 15 minutes, how much were you focusing on your problems?</text>
 		</questionblock>
  	    <question id="03" type = "radio">
 			<text>Since the last survey you answered, have you consumed alcohol? </text>
