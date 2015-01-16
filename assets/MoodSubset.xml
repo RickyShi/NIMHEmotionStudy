@@ -38,12 +38,15 @@
 			<text id="28">How much have you felt the following IN THE PAST 15 MINUTES? ||INTERESTED</text>
 			<text id="29">How much have you felt the following IN THE PAST 15 MINUTES? ||PROUD</text>
 			<text id="30">How much have you felt the following IN THE PAST 15 MINUTES? ||STRONG</text>
-			<text id="31">How much have you felt the following IN THE PAST 15 MINUTES? ||GUILTY</text>			
+			<text id="31">How much have you felt the following IN THE PAST 15 MINUTES? ||GUILTY</text>
+	        
+	        <text id="36">How much have you felt the following IN THE PAST 15 MINUTES? ||PHYSICAL PAIN</text>		
 
 			<text id="32">How well does this describe you OVER THE LAST 15 MINUTES? ||I felt and acted on a strong impulse</text>
 			<text id="33">How well does this describe you OVER THE LAST 15 MINUTES?	||I did something without really thinking it through</text>
 			<text id="34">How well does this describe you OVER THE LAST 15 MINUTES?	||I gave up easily</text>
 			<text id="35">How well does this describe you OVER THE LAST 15 MINUTES?	||I did something for the thrill of it</text>
+			
 		</questionblock>
 		
 		
