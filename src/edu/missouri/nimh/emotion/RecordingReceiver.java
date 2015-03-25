@@ -2,6 +2,7 @@ package edu.missouri.nimh.emotion;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -12,66 +13,66 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
-public class StartupIntentReceiver extends BroadcastReceiver {
-
-	private String action="android.intent.action.MAIN";
-	private String category="android.intent.category.LAUNCHER";
-	private final int DELAY_TIME = 30*1000;
+public class RecordingReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-		final Context t = context;
+		Log.d("RecordingReceiver", "received");
+		String fileName = Utilities.RECORDING_CATEGORY + "." + MainActivity.ID + "." + Utilities.getFileDate();
+		// Need to be modified like the format after merging
+		// String prefix =
+		// RECORDING_FILENAME+"."+phoneID+"."+getFileDate
+		String toWrite = prepareData(context);
 
-		Intent s = new Intent(context,MainActivity.class);
-		s.setAction(action);
-		s.addCategory(category);
-		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(s);
-		Handler h = new Handler();
-		h.postDelayed(new Runnable(){
+		try {
+			Utilities.writeToFile(fileName + ".txt", toWrite);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				Utilities.scheduleAll(t);
+		String fileHead = getFileHead(fileName);
+		// Log.d("RecordingReceiver", fileHead);
+		String toSend = fileHead + toWrite;
+		String enformattedData = null;
+		try {
+			enformattedData = Utilities.encryption(toSend);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-				Utilities.scheduleDaemon(t);
+		 TransmitData transmitData = new TransmitData();
+		 if (Utilities.getConnectionState(context).equals("Connected")) {
+			transmitData.execute(enformattedData);
+		 }
 
-				// Recording
-				String fileName = Utilities.RECORDING_CATEGORY + "." + MainActivity.ID + "." + Utilities.getFileDate();
-				String toWrite = Utilities.getCurrentTimeStamp() + Utilities.LINEBREAK + "Device is booted."
-						+ Utilities.LINEBREAK + Utilities.SPLIT;
-				try {
-					Utilities.writeToFile(fileName + ".txt", toWrite);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				String fileHead = getFileHead(fileName);
-				// Log.d("RecordingReceiver", fileHead);
-				String toSend = fileHead + toWrite;
-				String enformattedData = null;
-				try {
-					enformattedData = Utilities.encryption(toSend);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent it = new Intent(Utilities.ACTION_RECORD);
+		PendingIntent piTrigger = PendingIntent.getBroadcast(context, 0, it, Intent.FLAG_ACTIVITY_NEW_TASK);
 
-				TransmitData transmitData = new TransmitData();
-				transmitData.execute(enformattedData);
-			}
-
-		}, DELAY_TIME);
+		am.setExact(AlarmManager.RTC_WAKEUP, getNextLongTime(), piTrigger);
 	}
 
-	// Recording
+	private long getNextLongTime() {
+		Calendar s = Calendar.getInstance();
+		s.add(Calendar.MINUTE, 5);
+		// s.add(Calendar.SECOND, 30);
+		return s.getTimeInMillis();
+	}
+
+	private String prepareData(Context context) {
+		String connectionState = Utilities.getConnectionState(context);
+		return Utilities.getCurrentTimeStamp() + Utilities.LINEBREAK + "Connection: " + connectionState
+				+ Utilities.LINEBREAK + "Battery: " + Utilities.curBatt + Utilities.LINEBREAK + Utilities.SPLIT;
+	}
+
 	private String getFileHead(String fileName) {
 		StringBuilder prefix_sb = new StringBuilder(Utilities.PREFIX_LEN);
 		prefix_sb.append(fileName);
@@ -108,4 +109,5 @@ public class StartupIntentReceiver extends BroadcastReceiver {
 			}
 		}
 	}
+
 }

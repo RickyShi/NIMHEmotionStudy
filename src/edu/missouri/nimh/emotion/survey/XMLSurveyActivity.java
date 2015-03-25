@@ -85,7 +85,7 @@ public class XMLSurveyActivity extends Activity {
   	
   	SoundPool soundp;
 	private HashMap<Integer, Integer> soundsMap;
-	int soundDelay = 1000;
+	int soundDelay = 5000;
 	Timer t;
 	int streamID;
 	String surveyTitle;
@@ -123,7 +123,7 @@ public class XMLSurveyActivity extends Activity {
 		
 		soundp = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
 		soundsMap = new HashMap<Integer, Integer>();
-		soundsMap.put(1, soundp.load(this, R.raw.alarm_sound, 1));
+		soundsMap.put(1, soundp.load(this, R.raw.new_alarm_sound, 1));
 		t=new Timer();
 		
 		
@@ -163,7 +163,7 @@ public class XMLSurveyActivity extends Activity {
 			prepareSound();
 			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-	        v.vibrate(1000);
+	        v.vibrate(5000);
 	        
 	        //prepare seq title and reminder title
 	        Log.d("!!!!!!!!!!!!!!!!", ""+surveyTitle);
@@ -553,7 +553,7 @@ public class XMLSurveyActivity extends Activity {
 		t.schedule(new StartSound(),soundDelay);
 		
 		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(1000);
+        v.vibrate(5000);
 	}
 	
 	

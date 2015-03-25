@@ -16,62 +16,37 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
-public class StartupIntentReceiver extends BroadcastReceiver {
-
-	private String action="android.intent.action.MAIN";
-	private String category="android.intent.category.LAUNCHER";
-	private final int DELAY_TIME = 30*1000;
+public class ShutdownReceiver extends BroadcastReceiver {
+	String fileName = Utilities.RECORDING_CATEGORY + "." + MainActivity.ID + "." + Utilities.getFileDate();
+	String toWrite = Utilities.getCurrentTimeStamp() + Utilities.LINEBREAK + "Device is shutting down."
+			+ Utilities.LINEBREAK + Utilities.SPLIT;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-		final Context t = context;
+		try {
+			Utilities.writeToFile(fileName + ".txt", toWrite);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		Intent s = new Intent(context,MainActivity.class);
-		s.setAction(action);
-		s.addCategory(category);
-		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(s);
-		Handler h = new Handler();
-		h.postDelayed(new Runnable(){
+		String fileHead = getFileHead(fileName);
+		// Log.d("RecordingReceiver", fileHead);
+		String toSend = fileHead + toWrite;
+		String enformattedData = null;
+		try {
+			enformattedData = Utilities.encryption(toSend);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				Utilities.scheduleAll(t);
-
-				Utilities.scheduleDaemon(t);
-
-				// Recording
-				String fileName = Utilities.RECORDING_CATEGORY + "." + MainActivity.ID + "." + Utilities.getFileDate();
-				String toWrite = Utilities.getCurrentTimeStamp() + Utilities.LINEBREAK + "Device is booted."
-						+ Utilities.LINEBREAK + Utilities.SPLIT;
-				try {
-					Utilities.writeToFile(fileName + ".txt", toWrite);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				String fileHead = getFileHead(fileName);
-				// Log.d("RecordingReceiver", fileHead);
-				String toSend = fileHead + toWrite;
-				String enformattedData = null;
-				try {
-					enformattedData = Utilities.encryption(toSend);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				TransmitData transmitData = new TransmitData();
-				transmitData.execute(enformattedData);
-			}
-
-		}, DELAY_TIME);
+		TransmitData transmitData = new TransmitData();
+		if (Utilities.getConnectionState(context).equals("Connected")) {
+			transmitData.execute(enformattedData);
+		}
 	}
 
-	// Recording
 	private String getFileHead(String fileName) {
 		StringBuilder prefix_sb = new StringBuilder(Utilities.PREFIX_LEN);
 		prefix_sb.append(fileName);

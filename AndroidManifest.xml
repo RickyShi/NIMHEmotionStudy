@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.missouri.nimh.emotion"
-    android:versionCode="1223"
-    android:versionName="2.1" >
+    android:versionCode="030200"
+    android:versionName="3.2.0" >
 
     <uses-sdk
         android:minSdkVersion="19"
@@ -83,7 +83,22 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>>
         </receiver>
-        
+        <!-- Recording -->
+        <service android:name=".services.RecordingService"></service>
+          <receiver 
+            android:name=".ShutdownReceiver">
+            <intent-filter>
+            <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".RecordingReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="edu.missouri.nimh.emotion.ACTION_RECORD" />
+            </intent-filter>
+        </receiver>
+        <!-- Recording -->
         <receiver
             android:name=".DaemonReceiver" 
             android:exported="false" >
